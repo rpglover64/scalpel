@@ -29,6 +29,11 @@ data Comment
     | ImageComment Author URL
     deriving (Show, Eq)
 
+orElse :: Scraper str (Maybe a) -> Scraper str (Maybe a) -> Scraper str (Maybe a)
+orElse x y = do
+  mx <- x
+  maybe y (return . Just) mx
+
 main :: IO ()
 main = print $ scrapeStringLike exampleHtml comments
     where
@@ -36,9 +41,7 @@ main = print $ scrapeStringLike exampleHtml comments
     comments = catMaybes <$> chroots ("div" @: [hasClass "container"]) comment
 
     comment :: Scraper String (Maybe Comment)
-    comment = do
-      tc <- textComment
-      maybe imageComment (return . Just) tc
+    comment = textComment `orElse` imageComment
 
     textComment :: Scraper String (Maybe Comment)
     textComment = do
