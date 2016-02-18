@@ -1,5 +1,5 @@
 import Text.HTML.Scalpel
-import Control.Applicative
+import Data.Maybe
 
 
 exampleHtml :: String
@@ -33,19 +33,21 @@ main :: IO ()
 main = print $ scrapeStringLike exampleHtml comments
     where
     comments :: Scraper String [Comment]
-    comments = chroots ("div" @: [hasClass "container"]) comment
+    comments = catMaybes <$> chroots ("div" @: [hasClass "container"]) comment
 
-    comment :: Scraper String Comment
-    comment = textComment <|> imageComment
+    comment :: Scraper String (Maybe Comment)
+    comment = do
+      tc <- textComment
+      maybe imageComment (return . Just) tc
 
-    textComment :: Scraper String Comment
+    textComment :: Scraper String (Maybe Comment)
     textComment = do
         author      <- text $ "span" @: [hasClass "author"]
         commentText <- text $ "div"  @: [hasClass "text"]
-        return $ TextComment author commentText
+        return $ TextComment <$> author <*> commentText
 
-    imageComment :: Scraper String Comment
+    imageComment :: Scraper String (Maybe Comment)
     imageComment = do
         author   <- text       $ "span" @: [hasClass "author"]
         imageURL <- attr "src" $ "img"  @: [hasClass "image"]
-        return $ ImageComment author imageURL
+        return $ ImageComment <$> author <*> imageURL
