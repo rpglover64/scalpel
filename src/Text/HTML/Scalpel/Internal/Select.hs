@@ -12,7 +12,7 @@ module Text.HTML.Scalpel.Internal.Select (
 
 import Text.HTML.Scalpel.Internal.Select.Types
 
-import Control.Applicative ((<$>), (<|>))
+import Control.Applicative ((<|>))
 import Control.Arrow (first)
 import Data.List (tails)
 import Data.Maybe (catMaybes)
