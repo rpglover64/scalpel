@@ -15,7 +15,6 @@ module Text.HTML.Scalpel.Internal.Scrape.URL (
 
 import Text.HTML.Scalpel.Internal.Scrape
 
-import Control.Applicative ((<$>))
 import Data.Char (toLower)
 import Data.Default (def)
 import Data.List (isInfixOf)
@@ -68,7 +67,7 @@ scrapeURLWithConfig :: (Ord str, TagSoup.StringLike str)
                   => Config str -> URL -> Scraper str a -> IO (Maybe a)
 scrapeURLWithConfig config url scraper = do
     maybeTags <- downloadAsTags (decoder config) url
-    return (maybeTags >>= scrape scraper)
+    return (maybeTags >>= scrape (Just <$> scraper))
     where
         downloadAsTags decoder url = do
             maybeBytes <- openURIWithOpts url (curlOpts config)

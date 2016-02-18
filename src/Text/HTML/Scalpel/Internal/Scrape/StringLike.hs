@@ -12,5 +12,5 @@ import qualified Text.StringLike as TagSoup
 -- | The 'scrapeStringLike' function parses a 'StringLike' value into a list of
 -- tags and executes a 'Scraper' on it.
 scrapeStringLike :: (Ord str, TagSoup.StringLike str)
-                 => str -> Scraper str a -> Maybe a
+                 => str -> Scraper str a -> a
 scrapeStringLike html scraper = scrape scraper (TagSoup.parseTags html)
